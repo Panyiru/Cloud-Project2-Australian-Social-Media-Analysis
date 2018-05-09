@@ -1,0 +1,12 @@
+- name: Create CouchDB in docker
+  become: yes
+  command: "{{ item }}"
+  with_items:
+    - docker run -d -p 5984:5984 -e COUCHDB_USER=admin -e COUCHDB_PASSWORD=team38 -v /database:/opt/couchdb/data --name hello apache/couchdb
+
+- name: Create database in docker
+  become: yes
+  shell: "{{ item }}"
+  with_items:
+    - curl -X PUT http://admin:team38@localhost:5984/tweet
+    - curl -X PUT http://admin:team38@localhost:5984/_replicator

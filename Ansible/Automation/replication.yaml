@@ -1,0 +1,14 @@
+- hosts: dbserver1
+  sudo: yes
+  roles:
+     - db1replica
+
+- hosts: dbserver2
+  sudo: yes
+  roles:
+     - db2replica
+
+- hosts: dbserver3
+  sudo: yes
+  roles:
+     - db3replica

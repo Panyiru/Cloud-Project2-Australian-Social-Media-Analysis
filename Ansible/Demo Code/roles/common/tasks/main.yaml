@@ -1,0 +1,89 @@
+#format and mount volume
+- name: Format Volume
+  become: yes
+  filesystem:
+    fstype: ext4
+    dev: /dev/vdb
+
+- name: Create Mount Dir
+  become: yes
+  file:
+    path: /webserver
+    state: directory
+
+- name: Mount Volume
+  become: yes
+  mount:
+    path: /webserver
+    src: /dev/vdb
+    fstype: ext4
+    state: mounted
+#install software
+- name: Install curl
+  become: yes
+  apt:
+    name: curl
+    update_cache: yes
+    state: latest
+
+- name: Install nginx
+  become: yes
+  apt:
+    name: nginx
+    state: latest
+
+- name: Install Apache Server
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - apache2
+- name: start apache2
+  service: name=apache2 state=started
+
+- name: Install pip
+  become: yes
+  apt:
+    name: python-pip
+    state: latest
+
+- name: Install zip
+  become: yes
+  apt:
+    name: zip
+    state: latest
+
+- name: Install Docker
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - docker.io
+
+
+- name: Install python dependency
+  become: yes
+  command: pip install {{item}}
+  with_items:
+    - certifi==2018.4.16
+    - chardet==3.0.4
+    - CouchDB==1.2
+    - idna==2.6
+    - nltk==3.2.5
+    - oauthlib==2.0.7
+    - PySocks==1.6.8
+    - requests==2.18.4
+    - requests-oauthlib==0.8.0
+    - six==1.11.0
+    - textblob==0.15.1
+    - tweepy==3.6.0
+    - TwitterAPI==2.5.0
+    - urllib3==1.22
+#creat couchdb container and create database tweet and _replicator
+- name: Create CouchDB in docker
+  become: yes
+  command: "{{ item }}"
+  with_items:
+    - docker run -d -p 5984:5984 -e COUCHDB_USER=admin -e COUCHDB_PASSWORD=team38 -v /webserver:/opt/couchdb/data --name hello apache/couchdb

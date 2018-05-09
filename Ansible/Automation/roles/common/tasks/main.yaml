@@ -1,0 +1,48 @@
+#format and mount volume
+- name: Format Volume
+  become: yes
+  filesystem:
+    fstype: ext4
+    dev: /dev/vdc
+
+- name: Create Mount Dir
+  become: yes
+  file:
+    path: /database
+    state: directory
+
+- name: Mount Volume
+  become: yes
+  mount:
+    path: /database
+    src: /dev/vdc
+    fstype: ext4
+    state: mounted
+#install software
+- name: Install curl
+  become: yes
+  apt:
+    name: curl
+    update_cache: yes
+    state: latest
+
+- name: Install nginx
+  become: yes
+  apt:
+    name: nginx
+    state: latest
+
+- name: Install pip
+  become: yes
+  apt:
+    name: python-pip
+    state: latest
+
+
+- name: Install Docker
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - docker.io

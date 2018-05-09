@@ -1,0 +1,4 @@
+- hosts: webserver:dbserver
+  sudo: yes
+  roles:
+     - common

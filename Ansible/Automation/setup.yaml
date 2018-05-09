@@ -1,0 +1,19 @@
+- hosts: webserver
+  sudo: yes
+  roles:
+     - common
+
+- hosts: dbserver1
+  sudo: yes
+  roles:
+     - common
+
+- hosts: dbserver2
+  sudo: yes
+  roles:
+     - common
+
+- hosts: dbserver3
+  sudo: yes
+  roles:
+     - common

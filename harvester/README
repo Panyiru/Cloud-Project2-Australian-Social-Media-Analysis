@@ -1,0 +1,5 @@
+Currently just for one node.
+install dependencies via pip from requirements.txt
+run: python3 harvesterManager.py 0 
+this will load configurations from the first entry of confs.py and starts the harvester to write data to couchdb
+The range and center of the tweets should be changed and confs.py should be updated for purposes other than testing.

@@ -1,0 +1,12 @@
+- hosts: dbserver1
+  sudo: yes
+  roles:
+     - dbserver
+- hosts: dbserver2
+  sudo: yes
+  roles:
+     - dbserver
+- hosts: dbserver3
+  sudo: yes
+  roles:
+     - dbserver

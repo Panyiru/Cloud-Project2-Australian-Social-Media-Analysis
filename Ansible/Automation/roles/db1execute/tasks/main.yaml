@@ -1,0 +1,11 @@
+- name: clone harvester git repo
+  git:
+    repo: https://github.com/Panyiru/project.git
+    dest: /home/ubuntu/twitter-analytics
+
+- name: execute harvester
+  shell: "{{item}}"
+  args:
+    chdir: /home/ubuntu/twitter-analytics
+  with_items:
+    - sudo python harvesterManager.py 1 localhost:5984

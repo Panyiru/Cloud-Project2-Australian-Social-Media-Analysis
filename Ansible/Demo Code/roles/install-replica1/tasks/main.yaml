@@ -1,0 +1,17 @@
+- name: Create database in docker
+  become: yes
+  shell: "{{ item }}"
+  with_items:
+    - curl -X PUT http://admin:team38@localhost:5984/tweet
+    - curl -X PUT http://admin:team38@localhost:5984/_replicator
+
+- name: set up replication
+  become: yes
+  command: "{{ item }}"
+  with_items:
+    - curl -X POST http://admin:team38@localhost:5984/_replicator -d '{"source":"http://admin:team38@localhost:5984/tweet", "target":"http://admin:team38@{{replica}}:5984/tweet", "continuous":true}' -H "Content-Type:application/json"
+
+- name: clone harvester git repo
+  git:
+    repo: https://github.com/Panyiru/project.git
+    dest: /home/ubuntu/twitter-analytics

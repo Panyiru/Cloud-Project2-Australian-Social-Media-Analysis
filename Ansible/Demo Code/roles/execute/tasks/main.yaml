@@ -1,0 +1,6 @@
+- name: execute harvester
+  shell: "{{item}}"
+  args:
+    chdir: /home/ubuntu/twitter-analytics
+  with_items:
+    - sudo python harvesterManager.py 1 localhost:5984

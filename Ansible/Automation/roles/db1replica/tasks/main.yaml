@@ -1,0 +1,6 @@
+- name: set up replication
+  become: yes
+  command: "{{ item }}"
+  with_items:
+    - curl -X POST http://admin:team38@localhost:5984/_replicator -d '{"source":"http://admin:team38@localhost:5984/tweet", "target":"http://admin:team38@{{replica1}}:5984/tweet", "continuous":true}' -H "Content-Type:application/json"
+    - curl -X POST http://admin:team38@localhost:5984/_replicator -d '{"source":"http://admin:team38@localhost:5984/tweet", "target":"http://admin:team38@{{replica2}}:5984/tweet", "continuous":true}' -H "Content-Type:application/json"

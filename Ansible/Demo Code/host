@@ -1,0 +1,8 @@
+[webserver]
+115.146.86.118
+[dbserver]
+115.146.86.214
+
+[all:vars]
+ansible_ssh_user=ubuntu
+ansible_ssh_private_key_file=/Users/panyiru/.ssh/cloud.key

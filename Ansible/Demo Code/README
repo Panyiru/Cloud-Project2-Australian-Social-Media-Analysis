@@ -1,0 +1,15 @@
+This folder is for automation deployment on Nectar.
+
+1. run python file ec2.py--create instances on nectar, and write Host IP in host
+-command: python ec2.py
+
+2. wait for a while, ubuntu OS needs time to initialize, then install set of softwares like apache, docker, couchDB, python dependencies,etc.
+-command: . terminal1.sh
+
+3. wait for a while, couchDB in docker needs time to initialize, then create database tweet and _replicator, set up replicator and clone source code from git repo
+-command: . terminal2.sh
+
+4. wait for a while, then run harvesterManager.py on node, data synchronization can been seen in couchDB.
+-command: . terminal3.sh
+
+There are 4 roles in Ansible, including common, install-replica1, install-replica2 and execute. Please refer source code for details.

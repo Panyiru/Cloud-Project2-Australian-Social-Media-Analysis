@@ -1,0 +1,4 @@
+- hosts: webserver
+  sudo: yes
+  roles:
+     - execute
