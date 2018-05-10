@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Melbourne Tweets Analysis</title>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/echarts.min.js"></script>
+    <!-- <style type="text/css" href="css/bootstrap.min.css"></style> -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script> -->
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    #home, #map, #analysis, #member {
+        height: 84%;
+        overflow: scroll;
+    }
+    #home, #member {
+        background-color: #FFFFEE;
+    }
+    #home {
+        padding: 5% 30%;
+        font-size: 15px;
+    }
+    #home div {
+        margin: 20px 2px;
+    }
+    #map-wrapper {
+        height: 100%;
+        background-color: #FFFFCC;
+        overflow: scroll;
+    }
+    #map {
+        position: relative;
+    }
+    #options {
+        position: absolute;
+        width: 300px;
+        height: 260px;
+        background-color: white;
+        right: 0px;
+        top: 0px;
+        z-index: 100;
+        padding: 22px;
+    }
+    #options div {
+        margin-bottom: 15px;
+    }
+    #top-navigation {
+        background-color: #5bc0de;
+        height: 8%;
+        padding: 0 15px;
+    }
+    #top-navigation h3 {
+        margin: 0;
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    #bottom-navigation {
+        position:relative;
+        text-align:center;
+        height: 8%;
+    }
+    #bottom-navigation button {
+        width: 180px;
+        margin: 0 20px;
+        padding: 10px 0;
+        color: #555;
+        background-color: transparent;
+        border: transparent;
+    }
+    #bottom-navigation button:hover {
+        color: #5bc0de;
+    }
+    #bottom-navigation .bottom-chosen, #bottom-navigation .bottom-chosen:hover, #bottom-navigation .bottom-chosen:focus, #bottom-navigation .bottom-chosen:active {
+        color: #5bc0de;
+        outline: none;
+    }
+    .glyphicon {
+         font-size: 18px;
+         padding: 3px 0;
+    }
+    .btn {
+        display: block;
+        font-size: 13px;
+        width: 150px;
+        padding: 2px 0;
+        margin: 5px 0;
+    }
+    .btn-primary {
+        background-color: #5bc0de;
+    }
+    .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+        background-color: #5bc0de;
+        outline: none;
+    }
+    #member {
+        padding: 5% 0;
+    }
+    .member {
+        background-color: white;
+        border: 1px solid grey;
+        width: 35%;
+        float: left;
+        margin: 10px 5% 10px 10%;
+        padding: 10px;
+    }
+    .avatar, .info {
+        display: inline;
+        float: left;
+    }
+    .avatar {
+        margin-right: 5%;
+    }
+    .name {
+        font-weight: bold;
+    }
+    .role {
+        color: grey;
+    }
+    .container {
+        margin-left: 0;
+    }
+    </style>
+  </head>
+  <body>
+    <nav id="top-navigation">
+        <h3>Tweet Sentiment Analysis - Team 38</h3>
+    </nav>
+
+    <div id="home">
+        <h2>Australian Social Media Analysis</h2>
+        <div>Aim:
+            <ul>
+              <li>To use Nectar(IaaS) to handle huge data from Twitter</li>
+              <li>To implement sentiment analysis behind the big data</li>
+              <li>To visualize the data on the web</li>
+            </ul>
+        </div>
+        <div>Data set:
+            <ul>
+              <li>2.8 million - our harvester (using both Twitter Streaming API and Twitter Search API)</li>
+              <li>0.2 million - data from Richard's CouchDB</li>
+            </ul>
+        </div>
+        <div>Scenarios:
+            <ul>
+              <li>Income - Average income per person per week</li>
+              <li>Age - Medium age of the area</li>
+              <li>Education - Percentage of people having received higher education</li>
+              <li>Children - Percentage of people living with children</li>
+              <li>Volunteer - Number of volunteers in the erea</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="map" style="display: none">
+        <div id="map-wrapper"></div>
+        <div id="options">
+            <div>Click button to show different scenarios:</div>
+            <button id="sentiment-map" type="button" class="btn btn-default">Sentiment</button>
+            <button id="income-map" type="button" class="btn btn-default">Income</button>
+            <button id="age-map" type="button" class="btn btn-default">Age</button>
+            <button id="education-map" type="button" class="btn btn-default">Education</button>
+            <button id="children-map" type="button" class="btn btn-default">Children</button>
+            <button id="volunteer-map" type="button" class="btn btn-default">Volunteer</button>
+        </div>
+
+    </div>
+
+    <div id="analysis" style="display: none">
+
+          <div id="scatter_chart1"></div>
+          <div id="scatter_chart2"></div>
+          <div id="scatter_chart3"></div>
+          <div id="scatter_chart4"></div>
+          <div id="scatter_chart5"></div>
+
+      <div id="pie_chart" style="width: 100%;height:500px;"></div>
+      <div id="week_chart" style="width: 100%;height:500px;"></div>
+      <div id="hour_chart" style="width: 100%;height:500px;"></div>
+    </div>
+
+
+    <div id="member" style="display: none">
+        <div class="member">
+            <div class="avatar"><img src="example.png" width="80px" height="80px" alt="cat" /></div>
+            <div class="info">
+                <div class="name">Yiru Pan - System Administrator</div>
+                <div class="role">Nectar cloud setup, CouchDB setup, <br/>Ansible/Boto automation, architecture design</div>
+            </div>
+        </div>
+        <div class="member">
+            <div class="avatar"><img src="example.png" width="80px" height="80px" alt="cat" /></div>
+            <div class="info">
+                <div class="name">Lu Chen - Backend Developer</div>
+                <div class="role">twitter harvester</div>
+            </div>
+        </div>
+        <div class="member">
+            <div class="avatar"><img src="example.png" width="80px" height="80px" alt="cat" /></div>
+            <div class="info">
+                <div class="name">Fazard Vazirnia - Backend Developer</div>
+                <div class="role">twitter harvester, Map Reduce, Django</div>
+            </div>
+        </div>
+        <div class="member">
+            <div class="avatar"><img src="example.png" width="80px" height="80px" alt="cat" /></div>
+            <div class="info">
+                <div class="name">Wenyi Zhao - Frontend Developer</div>
+                <div class="role">web design, map, sentiment analysis graphs</div>
+            </div>
+        </div>
+        <div class="member">
+            <div class="avatar"><img src="example.png" width="80px" height="80px" alt="cat" /></div>
+            <div class="info">
+                <div class="name">Peng Kuang - Frontend Developer</div>
+                <div class="role">sentiment analysis graphs</div>
+            </div>
+        </div>
+    </div>
+
+    <nav id="bottom-navigation">
+        <button id="nav-home" class="bottom-chosen"><span class="glyphicon glyphicon-home" aria-hidden="true"></span><br><span>Home</span></button>
+        <button id="nav-map"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span><br>Sentiment</button>
+        <button id="nav-analysis"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span><br>Sentiment Analysis</button>
+        <button id="nav-member"><span class="glyphicon glyphicon glyphicon-user" aria-hidden="true"></span><br>Team Members</button>
+    </nav>
+
+<!--     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script> -->
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script>
+
+$("#sentiment-map").addClass("btn-primary");
+
+var JSON_PATH = 'mel_geojson.json';
+
+
+var sentimentSta = [],
+    incomeSta = [],
+    ageSta = [],
+    educationSta = [],
+    childrenSta = [],
+    volunteerSta = [];
+
+function JsonToDict(Json) {
+    var sArr = Json["rows"];
+    var len = sArr.length;
+    var sDict = {};
+    var countAll = 0;
+    var temp, tempKey, tempValue;
+    // console.log("len = ", len);
+    for (var i = 0; i < len; i++) {
+        temp = sArr[i];
+        // console.log(temp["key"]); // sa2code or sa2code1
+        tempKey = temp["key"];
+        tempValue = temp["value"];
+        sDict[tempKey] = tempValue;
+        // console.log(tempValue);
+        sDict[tempKey]["avg"] = (sDict[tempKey]["sum"] / sDict[tempKey]["count"]).toFixed(4);
+        for (attribute in tempValue) {
+            switch (attribute) {
+                case "average_income_per_person_per_week":
+                    incomeSta.push(tempValue[attribute]);
+                    break;
+                case "medium_age":
+                    ageSta.push(tempValue[attribute]);
+                    break;
+                case "higher_education_percentage":
+                    educationSta.push(tempValue[attribute]);
+                    break;
+                case "having_children_percentage":
+                    childrenSta.push(tempValue[attribute]);
+                    break;
+                case "volunteer_total_num":
+                    volunteerSta.push(tempValue[attribute]);
+                    break;
+                case "sum":
+                    sentimentSta.push(sDict[tempKey]["avg"]);
+                    break;
+            }
+        }
+        // console.log("count = ", tempKey["count"]);
+        countAll += tempKey["count"];
+    }
+    // console.log("countAll = ", countAll);
+    return sDict;
+}
+
+
+var sentimentJson = $.ajax({
+    url: "./sentiment.json",
+    // url: "http://115.146.85.254/per_area/",
+    async: false
+});
+
+// console.log(sentimentJson);
+
+var resultJson = $.ajax({
+    url: "./result.json",
+    // url: "http://115.146.85.254/areas/",
+    async: false
+});
+
+
+
+function initMap() {
+    var melbourne = {
+        lat: -37.85,
+        lng: 145.4
+    };
+    var map = new google.maps.Map(document.getElementById('map-wrapper'), {
+        zoom: 9, // 9
+        center: melbourne
+    });
+
+    var infoWindow = new google.maps.InfoWindow({
+        content: ''
+    });
+
+    var data = map.data.loadGeoJson(JSON_PATH, null, setStyle);
+
+    var count = 0;
+
+    function setStyle() {
+        map.data.setStyle(function(feature) {
+            var sa2Code = feature["f"]["SA2_5DIG16"];
+            count++;
+            var color = -1;
+            try {
+                if (sDict[sa2Code]["avg"]) {
+                    color = sDict[sa2Code]["avg"];
+                }
+            } catch (e) {}
+            return {
+                fillColor: getColor(color),
+                fillOpacity: 0.7,
+                strokeWeight: 1,
+                zIndex: 1
+            }
+        });
+    }
+
+    function getColor(property) {
+        if (property == -1) {
+            return 'white';
+        }
+        var colors = [
+            '#d1ccad',
+            '#c2c083',
+            '#cbd97c',
+            '#acd033',
+            '#89a844'
+        ];
+        return property >= 0.2 ? colors[4] :
+            property > 0.15 ? colors[3] :
+            property > 0.1 ? colors[2] :
+            property > 0.05 ? colors[1] :
+            colors[0];
+    }
+
+    map.data.addListener('mouseover', function(e) {
+        map.data.revertStyle();
+        map.data.overrideStyle(e.feature, {
+            strokeWeight: 2,
+            zIndex: 2
+        });
+        var sa2Code = e.feature.getProperty('SA2_5DIG16');
+        var sa2Code2 = e.feature.getProperty('SA2_MAIN16');
+        if (sDict[sa2Code] == null) {
+            sDict[sa2Code] = {
+                "count": 0
+            };
+        }
+
+        function showSentiment(sa2Code) {
+            if (sDict[sa2Code]["avg"] != null) {
+                return '{"avg": ' + sDict[sa2Code]["avg"] +
+                    '; "totalCount": ' + sDict[sa2Code]["count"] + '}';
+            } else {
+                return 'No tweet in this suburb';
+            }
+        }
+
+
+        var contentString = '<div style="line-height:1.3;overflow:visible;white-space:nowrap;">' + '<b>' +
+            sa2Code + ' - ' + sa2Code2 + ' - ' + e.feature.getProperty('SA2_NAME16') +
+            '</b> <br> <br> <b>Sentiment: </b>' + showSentiment(sa2Code) +
+            '<br> <b>Income:</b> ' + rDict[sa2Code2]["average_income_per_person_per_week"] +
+            '<br> <b>Age:</b> ' + rDict[sa2Code2]["medium_age"] +
+            '<br> <b>Education:</b> ' + rDict[sa2Code2]["higher_education_percentage"] +
+            '<br> <b>Children:</b> ' + rDict[sa2Code2]["having_children_percentage"] +
+            '<br> <b>Volunteer:</b> ' + rDict[sa2Code2]["volunteer_total_num"] +
+            '</div>';
+        infoWindow.setContent(contentString);
+
+        var anchor = new google.maps.MVCObject();
+        anchor.set("position", e.latLng);
+        // console.log("myLatLng = ", e.latLng);
+        infoWindow.open(map, anchor);
+    });
+
+
+    map.data.addListener('mouseout', function(e) {
+        map.data.revertStyle();
+    });
+
+
+
+
+    var bottomNavBtn = ["nav-home", "nav-map", "nav-analysis", "nav-member"];
+    var bottomNavPg = ["home", "map", "analysis", "member"];
+
+    $("#bottom-navigation button").on("click", function() {
+        $("#bottom-navigation button").removeClass("bottom-chosen");
+        $(this).addClass("bottom-chosen");
+        var id = $(this).attr("id");
+        // console.log("#"+id+"");
+        for (var i = 0; i < bottomNavBtn.length; i++) {
+            // console.log(id == bottomNavBtn[i]);
+            if (id == bottomNavBtn[i]) {
+                $("#" + bottomNavPg[i] + "").css("display", "block");
+            } else {
+                // console.log(i);
+                $("#" + bottomNavPg[i] + "").css("display", "none");
+            }
+        }
+    });
+
+
+    var optionDic = {
+        "income-map": "average_income_per_person_per_week",
+        "children-map": "having_children_percentage",
+        "volunteer-map": "volunteer_total_num",
+        "education-map": "higher_education_percentage",
+        "age-map": "medium_age"
+    };
+
+
+    $("#options button").on("click", optionChange);
+
+
+    function optionChange() {
+        $("#options button").removeClass("btn-primary");
+        $(this).addClass("btn-primary");
+        var id = $(this).attr("id");
+
+        if (id == "sentiment-map") {
+            setStyle();
+            return;
+        }
+        map.data.setStyle({});
+
+        map.data.setStyle(function(feature) {
+            var option = optionDic[id];
+            var sa2Code1 = feature["f"]["SA2_MAIN16"];
+            count++;
+            var color = -1;
+            try {
+                if (rDict[sa2Code1][option]) {
+                    color = rDict[sa2Code1][option];
+                }
+            } catch (e) {}
+            return {
+                fillColor: getColor1(color, id),
+                fillOpacity: 0.7,
+                strokeWeight: 1,
+                zIndex: 1
+            }
+        });
+    }
+
+    var delimiters = {
+        "sentiment-map": {
+            "d80": 1,
+            "d60": 1,
+            "d40": 1,
+            "d20": 1
+        },
+        "income-map": {
+            "d80": 1100,
+            "d60": 900,
+            "d40": 650,
+            "d20": 500
+        },
+        "age-map": {
+            "d80": 42,
+            "d60": 38,
+            "d40": 34,
+            "d20": 30
+        },
+        "education-map": {
+            "d80": 36,
+            "d60": 28,
+            "d40": 20,
+            "d20": 12
+        },
+        "children-map": {
+            "d80": 84,
+            "d60": 78,
+            "d40": 72,
+            "d20": 60
+        },
+        "volunteer-map": {
+            "d80": 3000,
+            "d60": 2500,
+            "d40": 2000,
+            "d20": 1000
+        },
+    };
+
+
+
+    // id: "sentiment-map", "income-map", "age-map", "education-map", "children-map", "volunteer-map"
+    function getColor1(property, id) {
+        // console.log("id from getColor1 = ", id);
+        var delimiter = delimiters[id];
+        // console.log("colorInGetColor = ", property);
+        if (property == -1) {
+            return 'white';
+        }
+        var colors = [
+            '#d1ccad',
+            '#c2c083',
+            '#cbd97c',
+            '#acd033',
+            '#89a844'
+            // 'red','orange','yellow','green','cyan'
+        ];
+        var len = property.length;
+        // console.log(len);
+        if (typeof property == "string" && property.charAt(len - 1) == "%") {
+            property = Number(property.substring(0, property.length - 1));
+        }
+
+        console.log(Number(property));
+        return Number(property) >= delimiter["d80"] ? colors[4] :
+            Number(property) > delimiter["d60"] ? colors[3] :
+            Number(property) > delimiter["d40"] ? colors[2] :
+            Number(property) > delimiter["d20"] ? colors[1] :
+            colors[0];
+    }
+
+}
+
+
+
+
+function drawGraph() {
+
+
+    // begin
+
+    var totalSentimentJson = $.ajax({
+        url: "total_sentiment.json",
+        // url: "115.146.85.254/total_sentiment",
+        async: false
+    });
+
+
+    var tSJson = JSON.parse(totalSentimentJson.responseText);
+    // console.log(tSJson);
+
+    var tSData = [];
+
+    for (d in tSJson) {
+        var name = d;
+        var value = tSJson[name]["count"];
+        // console.log(key, value);
+        var tempDic = {};
+        tempDic["value"] = value;
+        tempDic["name"] = name;
+        tSData.push(tempDic);
+    }
+
+    // console.log(tSData);
+
+    // pie chart begin
+    function drawPie(tSData) {
+        var myChart = document.getElementById('pie_chart');
+        myChart.style.width = window.innerWidth+'px';
+        var pieChart = echarts.init(myChart);
+
+        var pieOption = {
+            title: {
+                text: 'Percentage of Negative, Neutral and Positive Tweets in Melbourne',
+                x: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: "{b} : {c} ({d}%)"
+            },
+            // legend: {
+            //     orient: 'vertical',
+            //     left: 'right',
+            //     data: ['positive','negetive','neutral']
+            // },
+            series: [{
+                type: 'pie',
+                radius: '55%',
+                center: ['50%', '60%'],
+                data: tSData,
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                    // ,
+                    // normal: {
+                    //     label:{
+                    //     show:true,
+                    //     position: 'inner',
+                    //     formatter:'{b} : {c} ({d}%)'
+                    //     }
+                    // }
+                }
+            }]
+        };
+
+        pieChart.setOption(pieOption);
+
+    }
+
+    drawPie(tSData);
+
+    // pie chart end
+
+
+    var weekdaysJson = $.ajax({
+        url: "weekdays.json",
+        // url: "http://115.146.85.254/weekdays/",
+        async: false
+    });
+
+    var wdJson = JSON.parse(weekdaysJson.responseText);
+    console.log(wdJson);
+
+
+
+    var hoursJson = $.ajax({
+        url: "hours.json",
+        // url: "http://115.146.85.254/hours/",
+        async: false
+    });
+
+    var hrJson = JSON.parse(hoursJson.responseText);
+    console.log(hrJson);
+
+
+
+    function getLineBarData(Json) {
+        var wdData = {
+            xAxisData: [],
+            barData: [],
+            lineData: []
+        };
+        for (d in Json) {
+            wdData["xAxisData"].push(d);
+            var value = Json[d];
+            wdData["barData"].push(value["count"]);
+            wdData["lineData"].push(value["sum"] / value["count"]);
+        }
+
+        return wdData;
+    }
+
+
+
+    function drawLineBar(data, id, title, x) {
+        var myChart = document.getElementById(id);
+        myChart.style.width = window.innerWidth+'px';
+
+        var lineBar = echarts.init(myChart);
+
+        var lineBarOption = {
+            title: {
+                text: 'Sentiment by ' + title,
+                x: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#999'
+                    }
+                }
+            },
+            toolbox: {
+                feature: {
+                    dataView: {
+                        show: true,
+                        readOnly: false
+                    },
+                    magicType: {
+                        show: true,
+                        type: ['line', 'bar']
+                    },
+                    restore: {
+                        show: true
+                    },
+                    saveAsImage: {
+                        show: true
+                    }
+                }
+            },
+            // legend: {
+            //     data:['count','average sentiment']
+            // },
+            xAxis: [{
+                type: 'category',
+                // data: data["xAxisData"],
+                data: x,
+                axisPointer: {
+                    type: 'shadow'
+                }
+            }],
+            yAxis: [{
+                type: 'value',
+                name: 'count',
+                min: Math.min.apply(null, data["barData"])*0.8,
+                max: Math.max.apply(null, data["barData"])*1.1,
+                interval: (Math.max.apply(null, data["barData"])*1.1 - Math.min.apply(null, data["barData"])*0.8) / 5,
+                axisLabel: {
+                    formatter: '{value}'
+                }
+            }, {
+                type: 'value',
+                name: 'average sentiment',
+                min: Math.min.apply(null, data["lineData"])*0.8,
+                max: Math.max.apply(null, data["lineData"])*1.1,
+                interval: (Math.max.apply(null, data["lineData"])*1.1 - Math.min.apply(null, data["lineData"])*0.8) / 5,
+                axisLabel: {
+                    formatter: '{value}'
+                }
+            }],
+            series: [{
+                name: 'count',
+                type: 'bar',
+                data: data["barData"]
+            }, {
+                name: 'average sentiment',
+                type: 'line',
+                yAxisIndex: 1,
+                data: data["lineData"]
+            }]
+        };
+        lineBar.setOption(lineBarOption);
+    }
+
+    var weekX = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    function getHourX() {
+        var rt = [];
+        for (var i = 0; i < 24; i++) {
+            rt.push(i+":00");
+        }
+        return rt;
+    }
+    drawLineBar(getLineBarData(wdJson), "week_chart", "Date", weekX);
+    drawLineBar(getLineBarData(hrJson), "hour_chart", "Hour", getHourX());
+
+    // weekdays end
+
+}
+
+    drawGraph();
+
+var sJson = JSON.parse(sentimentJson.responseText);
+
+// setTimeout("", 3000);
+
+var sDict = JsonToDict(sJson);
+console.log(sJson);
+// console.log(sDict);
+
+var rJson = JSON.parse(resultJson.responseText);
+var rDict = JsonToDict(rJson);
+
+    </script>
+
+    <script src="./read_data.js"></script>
+    <script src="./scatter_charts.js"></script>
+
+
+    <!-- <script type="text/javascript" src="js/ec.js"></script> -->
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyClIiyVVtU7dKo61YaSQFV_8-kHce86rac&callback=initMap&language=en&region=AU">
+    </script>
+  </body>
+</html>

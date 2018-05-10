@@ -1,0 +1,74 @@
+.navbar {
+  width:1200px;
+}
+
+.navbar .navbar-brand {
+  width:1200px;
+  text-align: center;
+}
+
+#scatter_chart1 {
+  height: 550px;
+  width: 1200px;
+}
+
+#scatter_chart2 {
+  height: 550px;
+  width: 1200px;
+}
+
+#scatter_chart3 {
+  height: 550px;
+  width: 1200px;
+}
+
+#scatter_chart4 {
+  height: 550px;
+  width: 1200px;
+}
+
+#scatter_chart5 {
+  height: 600px;
+  width: 1200px;
+}
+
+#donut_chart {
+  height: 400px;
+  width: 600px;
+}
+
+#line_chart {
+  height: 400px;
+  width: 600px;
+}
+
+#bar_chart {
+  height: 400px;
+  width: 1200px;
+}
+
+#hour_chart_b {
+  height: 500px;
+  width: 1200px;
+}
+
+#week_chart_b {
+  height: 550px;
+  width: 800px;
+  margin: 0 auto;
+}
+
+#pie_chart_b {
+  height: 400px;
+  width: 700px;
+  margin: 0 auto;
+}
+
+.footer {
+  width:1200px;
+}
+
+.footer p{
+  width:1200px;
+  text-align: center;
+}

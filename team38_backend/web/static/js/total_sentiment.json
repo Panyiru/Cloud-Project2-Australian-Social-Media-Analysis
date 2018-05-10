@@ -1,0 +1,23 @@
+{
+    "negative": {
+        "sumsqr": 354027,
+        "max": 1,
+        "count": 354027,
+        "sum": 354027,
+        "min": 1
+    },
+    "neutral": {
+        "sumsqr": 187457,
+        "max": 1,
+        "count": 187457,
+        "sum": 187457,
+        "min": 1
+    },
+    "positive": {
+        "sumsqr": 1029048,
+        "max": 1,
+        "count": 1029048,
+        "sum": 1029048,
+        "min": 1
+    }
+}

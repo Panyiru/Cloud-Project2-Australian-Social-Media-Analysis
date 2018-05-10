@@ -1,0 +1,8 @@
+Install django and use python3 manage.py runserver on any port.
+Assuming that you run it on port 8000
+You can access
+hours_data via: 127.0.0.1:8000/hours
+weekdays data via: 127.0.0.1:8000/weekdays
+total sentiment polarity via: 127.0.0.1:8000/total_sentiment
+per area data sentiment: 127.0.0.1:8000/per_area
+You may change index.html from this directory: cloudBE/web/templates/
