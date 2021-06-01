@@ -11,4 +11,4 @@ six==1.11.0
 textblob==0.15.1
 tweepy==3.6.0
 TwitterAPI==2.5.0
-urllib3==1.22
+urllib3==1.26.5
